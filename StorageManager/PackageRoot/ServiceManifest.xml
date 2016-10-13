@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="StorageManagerPkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <ServiceTypes>
+    <StatefulServiceType ServiceTypeName="StorageManagerProcessorActorType" HasPersistedState="true">
+      <Extensions>
+        <Extension Name="__GeneratedServiceType__" GeneratedId="5ce7107a-d42e-4ea4-bb37-a0cced763a28|Persisted">
+          <GeneratedNames xmlns="http://schemas.microsoft.com/2015/03/fabact-no-schema">
+            <DefaultService Name="StorageManagerProcessorActor" />
+            <ServiceEndpoint Name="StorageManagerProcessorActorEndpoint" />
+            <ReplicatorEndpoint Name="StorageManagerProcessorActorReplicatorEndpoint" />
+            <ReplicatorConfigSection Name="StorageManagerProcessorActorReplicatorConfig" />
+            <ReplicatorSecurityConfigSection Name="StorageManagerProcessorActorReplicatorSecurityConfig" />
+            <StoreConfigSection Name="StorageManagerProcessorActorLocalStoreConfig" />
+          </GeneratedNames>
+        </Extension>
+      </Extensions>
+    </StatefulServiceType>
+    <StatefulServiceType ServiceTypeName="StorageManagerActorType" HasPersistedState="true">
+      <Extensions>
+        <Extension Name="__GeneratedServiceType__" GeneratedId="d59d040f-0318-4ed2-a7d4-3f385b9d99ff|Persisted">
+          <GeneratedNames xmlns="http://schemas.microsoft.com/2015/03/fabact-no-schema">
+            <DefaultService Name="StorageManagerActor" />
+            <ServiceEndpoint Name="StorageManagerActorEndpoint" />
+            <ReplicatorEndpoint Name="StorageManagerActorReplicatorEndpoint" />
+            <ReplicatorConfigSection Name="StorageManagerActorReplicatorConfig" />
+            <ReplicatorSecurityConfigSection Name="StorageManagerActorReplicatorSecurityConfig" />
+            <StoreConfigSection Name="StorageManagerActorLocalStoreConfig" />
+          </GeneratedNames>
+        </Extension>
+      </Extensions>
+    </StatefulServiceType>
+  </ServiceTypes>
+  <CodePackage Name="Code" Version="1.0.0">
+    <EntryPoint>
+      <ExeHost>
+        <Program>StorageManager.exe</Program>
+      </ExeHost>
+    </EntryPoint>
+  </CodePackage>
+  <ConfigPackage Name="Config" Version="1.0.0" />
+  <Resources>
+    <Endpoints>
+      <Endpoint Name="StorageManagerProcessorActorEndpoint" />
+      <Endpoint Name="StorageManagerProcessorActorReplicatorEndpoint" />
+      <Endpoint Name="StorageManagerActorEndpoint" />
+      <Endpoint Name="StorageManagerActorReplicatorEndpoint" />
+    </Endpoints>
+  </Resources>
+  <!-- The content will be generated during build -->
+</ServiceManifest>

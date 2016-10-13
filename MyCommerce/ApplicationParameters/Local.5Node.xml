@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/MyCommerce" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="ConnectionString" Value="data source=SURFACE-MB;initial catalog=MyCommerce;User Id=sa;Password=sqlServer2016;" />
+    <Parameter Name="StorageManagerProcessorActor_PartitionCount" Value="1" />
+    <Parameter Name="StorageManagerProcessorActor_TargetReplicaSetSize" Value="1" />
+    <Parameter Name="StorageManagerProcessorActor_MinReplicaSetSize" Value="1" />
+    <Parameter Name="StorageManagerActor_PartitionCount" Value="1" />
+    <Parameter Name="StorageManagerActor_TargetReplicaSetSize" Value="1" />
+    <Parameter Name="StorageManagerActor_MinReplicaSetSize" Value="1" />
+    <Parameter Name="ShoppingCartActor_PartitionCount" Value="1" />
+    <Parameter Name="CustomerActor_PartitionCount" Value="1" />
+  </Parameters>
+</Application>
