@@ -32,6 +32,7 @@
     <ProjectReference Include="..\Customer\Customer.csproj" />
     <ProjectReference Include="..\ShoppingCart\ShoppingCart.csproj" />
     <ProjectReference Include="..\StorageManager\StorageManager.csproj" />
+    <ProjectReference Include="..\WebApi\WebApi.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
   <PropertyGroup>
