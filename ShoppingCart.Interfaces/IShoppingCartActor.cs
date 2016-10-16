@@ -13,6 +13,6 @@ namespace ShoppingCart.Interfaces
     /// </summary>
     public interface IShoppingCartActor : IActor
     {
-
+        Task<bool> AddProductAsync(string productId, string productDescription, decimal unitCost, int quantity);
     }
 }

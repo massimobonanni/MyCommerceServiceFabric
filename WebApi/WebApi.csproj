@@ -113,15 +113,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\CustomersController.cs" />
+    <Compile Include="Dto\Customers\AddProductInfoDto.cs" />
     <Compile Include="Dto\Customers\CustomerInfoDto.cs" />
     <Compile Include="Dto\ErrorDto.cs" />
     <Compile Include="Dto\PageResponseDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="OwinCommunicationListener.cs" />
+    <Compile Include="Requests\Customers\AddProductToActiveShoppingCartRequest.cs" />
     <Compile Include="Requests\OrderingField.cs" />
     <Compile Include="Requests\PagedRequestBase.cs" />
     <Compile Include="Requests\RequestBase.cs" />
+    <Compile Include="Responses\Customers\AddProductToActiveShoppingCartResponse.cs" />
     <Compile Include="Responses\Customers\GetCustomerInfoResponse.cs" />
     <Compile Include="Responses\PagedResponseBase.cs" />
     <Compile Include="Responses\ResponseBase.cs" />

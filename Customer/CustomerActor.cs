@@ -16,6 +16,7 @@ using MyCommerce.SF.Core.Interfaces;
 using MyCommerce.SF.Core.Tracing;
 using Customer.Extensions;
 using MyCommerce.SF.Core.Constants;
+using ShoppingCart.Interfaces;
 
 namespace Customer
 {
@@ -32,7 +33,7 @@ namespace Customer
     internal class CustomerActor : MyCommerce.SF.Core.Actors.ActorBase, ICustomerActor
     {
         const string CustomerInfoStateKey = "CustomerInfo";
-        const string ShoppingInfoStateKey = "ShoppingInfo";
+        const string ShoppingCartInfoStateKey = "ShoppingCartInfo";
 
         private IReadOnlyEntityRepository<MyCommerce.Common.Entities.Customer, string> repository;
         private readonly bool isRepositoryInjected;
@@ -103,15 +104,37 @@ namespace Customer
         public async Task<ShoppingCartInfoDto> GetCurrentShoppingCartAsync()
         {
             if (!await IsCustomerValid()) return null;
-            var shoppingCartInfo = await StateManager.TryGetStateAsync<ShoppingCartInfo>(ShoppingInfoStateKey);
+            var shoppingCartInfo = await StateManager.TryGetStateAsync<ShoppingCartInfo>(ShoppingCartInfoStateKey);
             if (!shoppingCartInfo.HasValue) return null;
             return shoppingCartInfo.Value.AsShoppingCartInfoDto();
         }
 
-        public async Task<bool> AddProductToShoppingCartAsync(string productId, string productDescription, int quantity)
+        public async Task<bool> AddProductToShoppingCartAsync(string productId, string productDescription, decimal unitCost, int quantity)
         {
             if (!await IsCustomerValid()) return false;
+            var shoppingCartInfo = await StateManager.TryGetStateAsync<ShoppingCartInfo>(ShoppingCartInfoStateKey);
+            ShoppingCartInfo shoppingCart = null;
+            if (!shoppingCartInfo.HasValue)
+            {
+                shoppingCart = new ShoppingCartInfo();
+                await StateManager.SetStateAsync(ShoppingCartInfoStateKey, shoppingCart);
+            }
+            else
+            {
+                shoppingCart = shoppingCartInfo.Value;
+            }
 
+            var shoppingCartProxy =
+                this.ActorFactory.Create<IShoppingCartActor>(new ActorId(shoppingCart.Reference.ActorId),
+                    shoppingCart.Reference.ApplicationName, shoppingCart.Reference.ServiceName);
+
+            try
+            {
+                return await shoppingCartProxy.AddProductAsync(productId, productDescription, unitCost, quantity);
+            }
+            catch (Exception ex)
+            {
+            }
             return false;
         }
 

@@ -54,8 +54,26 @@ namespace ShoppingCart
             return Task.Delay(0);
         }
 
+        private string GetProductStateKey(string productId)
+        {
+            return $"{ProductItemStatePrefix}_{productId}";
+        }
 
+        public async Task<bool> AddProductAsync(string productId, string productDescription, decimal unitCost, int quantity)
+        {
+            if (string.IsNullOrWhiteSpace(productId)) return false;
 
+            var productInCart =
+                await this.StateManager.GetOrAddStateAsync(GetProductStateKey(productId), new ProductInfo()
+                {
+                    Id = productId,
+                    Description = productDescription
+                });
+            productInCart.UnitCost = unitCost;
+            productInCart.Quantity += quantity;
 
+            await this.StateManager.SetStateAsync(GetProductStateKey(productId), productInCart);
+            return true;
+        }
     }
 }

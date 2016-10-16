@@ -20,6 +20,6 @@ namespace Customer.Interfaces
 
         Task<ShoppingCartInfoDto> GetCurrentShoppingCartAsync();
 
-        Task<bool> AddProductToShoppingCartAsync(string productId, string productDescription,int quantity);
+        Task<bool> AddProductToShoppingCartAsync(string productId, string productDescription, decimal unitCost, int quantity);
     }
 }

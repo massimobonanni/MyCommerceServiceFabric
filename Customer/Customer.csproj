@@ -118,6 +118,10 @@
       <Project>{86B7933D-FE04-4369-8347-C5B5BC3B64C9}</Project>
       <Name>MyCommerce.SF.Dto</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ShoppingCart.Interfaces\ShoppingCart.Interfaces.csproj">
+      <Project>{51b717d6-f21d-416d-95a8-76915d0ff075}</Project>
+      <Name>ShoppingCart.Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

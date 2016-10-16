@@ -11,6 +11,7 @@ using MyCommerce.SF.Core.Constants;
 using MyCommerce.SF.Core.Interfaces;
 using MyCommerce.SF.Core.Utilities;
 using WebApi.Dto.Customers;
+using WebApi.Requests.Customers;
 using WebApi.Responses.Customers;
 
 namespace WebApi.Controllers
@@ -62,6 +63,36 @@ namespace WebApi.Controllers
             return response;
         }
 
+        [Route("api/customers/{username}/ActiveShoppingCart")]
+        [HttpPost]
+        [ResponseType(typeof(AddProductToActiveShoppingCartResponse))]
+        public async Task<HttpResponseMessage> AddProductToActiveShoppingCart(string username,
+            [FromBody] AddProductToActiveShoppingCartRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+            if (request == null) return Request.CreateResponse(HttpStatusCode.InternalServerError);
 
+            HttpResponseMessage response = null;
+
+            var custProxy = ActorFactory.Create<ICustomerActor>(new ActorId(username), ServiceNames.ApplicationName,
+                ServiceNames.CustomerServiceName);
+
+            try
+            {
+                var addResult = await custProxy.AddProductToShoppingCartAsync(request.Data.ProductId,
+                    request.Data.ProductDescription, request.Data.UnitCost, request.Data.Quantity);
+
+                response = Request.CreateResponse(HttpStatusCode.OK, new AddProductToActiveShoppingCartResponse()
+                {
+                    IsSuccess = addResult
+                });
+            }
+            catch (Exception ex)
+            {
+                response = Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+            return response;
+        }
     }
 }
