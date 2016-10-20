@@ -1,5 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Reflection;
+using System.Web.Http;
 using Owin;
+using WebApi.Controllers;
 
 namespace WebApi
 {
@@ -18,6 +20,8 @@ namespace WebApi
             //    defaults: new { id = RouteParameter.Optional }
             //);
 
+            var container = UnityConfig.RegisterComponents(config);
+            config.DependencyResolver = new Unity.WebApi.UnityDependencyResolver(container);
             config.MapHttpAttributeRoutes();
             appBuilder.UseWebApi(config);
         }

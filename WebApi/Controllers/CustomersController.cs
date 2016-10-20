@@ -21,9 +21,10 @@ namespace WebApi.Controllers
     {
         private IActorFactory ActorFactory;
 
-        public CustomersController()
+        public CustomersController(IActorFactory actorFactory)
         {
-            ActorFactory = new ReliableFactory();
+            if (actorFactory == null) throw new ArgumentNullException("actorFactory");
+            ActorFactory = actorFactory;
         }
 
         [Route("api/customers/{username}")]
