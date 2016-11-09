@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using ShoppingCart.Interfaces;
 
 namespace ShoppingCart
 {
@@ -18,5 +19,16 @@ namespace ShoppingCart
         public decimal UnitCost { get; set; }
         [DataMember]
         public int Quantity { get; set; }
+
+        public ProductDto ToProductDto()
+        {
+            return new ProductDto()
+            {
+                Id = this.Id,
+                Description = this.Description,
+                Quantity = this.Quantity,
+                UnitCost = this.UnitCost
+            };
+        }
     }
 }

@@ -8,6 +8,8 @@ using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.ServiceFabric.Actors.Client;
 using MyCommerce.SF.Core.Constants;
 using MyCommerce.SF.Core.Interfaces;
+using MyCommerce.SF.Core.Utilities;
+using MyCommerce.SF.Dto;
 using ShoppingCart.Interfaces;
 
 namespace ShoppingCart
@@ -27,6 +29,8 @@ namespace ShoppingCart
         const string CustomerStateKey = "Customer";
         const string ProductItemStatePrefix = "Product";
 
+        protected SubscribersWrapper Subscribers;
+
         /// <summary>
         /// Initializes a new instance of ShoppingCart
         /// </summary>
@@ -35,13 +39,14 @@ namespace ShoppingCart
         public ShoppingCartActor(ActorService actorService, ActorId actorId)
             : base(actorService, actorId)
         {
+            Subscribers = new SubscribersWrapper(this.StateManager);
         }
 
         public ShoppingCartActor(ActorService actorService, ActorId actorId,
             IActorStateManager stateManager, IActorFactory actorFactory, IServiceFactory serviceFactory) :
-            base(actorService, actorId, stateManager, actorFactory, serviceFactory)
+                base(actorService, actorId, stateManager, actorFactory, serviceFactory)
         {
-
+            Subscribers = new SubscribersWrapper(stateManager);
         }
 
         /// <summary>
@@ -60,16 +65,14 @@ namespace ShoppingCart
             return $"{ProductItemStatePrefix}_{productId}";
         }
 
-        public async Task SetCustomerAsync(string username)
+        private async Task<IEnumerable<string>> GetProductKeysAsync()
         {
-            if (!string.IsNullOrWhiteSpace(username))
-            {
-                await CreateCartDb(username);
-                await this.StateManager.GetOrAddStateAsync(CustomerStateKey, username);
-            }
+            var stateKeys = await this.StateManager.GetStateNamesAsync();
+            return stateKeys.Where(k => k.StartsWith($"{ProductItemStatePrefix}_"));
         }
 
-        public async Task<bool> AddProductAsync(string productId, string productDescription, decimal unitCost, int quantity)
+        public async Task<bool> AddProductAsync(string productId, string productDescription, decimal unitCost,
+            int quantity)
         {
             if (string.IsNullOrWhiteSpace(productId)) return false;
 
@@ -84,6 +87,8 @@ namespace ShoppingCart
 
             await UpdateProductDb(productInCart);
             await this.StateManager.SetStateAsync(GetProductStateKey(productId), productInCart);
+            await Subscribers.NotifySubscribersAsync(this);
+
             return true;
         }
 
@@ -126,5 +131,39 @@ namespace ShoppingCart
 
             return true;
         }
+
+
+        public async Task<ShoppingStateDto> GetStateAsync()
+        {
+            var state = new ShoppingStateDto() { Id = this.Id };
+            state.Products = new List<ProductDto>();
+            foreach (var key in await GetProductKeysAsync())
+            {
+                var productInCart = await this.StateManager.GetStateAsync<ProductInfo>(key);
+                if (productInCart != null)
+                    (state.Products as List<ProductDto>).Add(productInCart.ToProductDto());
+            }
+
+            return state;
+        }
+
+        public async Task<bool> SubscribeAsync(ISubscriberActor subscriber)
+        {
+            var actorId = subscriber.GetActorId().GetStringId();
+            await CreateCartDb(actorId);
+            await this.StateManager.GetOrAddStateAsync(CustomerStateKey, actorId);
+            await Subscribers.SubscribeAsync(subscriber);
+            return true;
+
+        }
+
+
+        public async Task<bool> UnsubscribeAsync(ISubscriberActor subscriber)
+        {
+            var actorId = subscriber.GetActorId().GetStringId();
+            await Subscribers.UnsubscribeAsync(subscriber);
+            return true;
+        }
     }
+
 }

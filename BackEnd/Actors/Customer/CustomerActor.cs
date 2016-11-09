@@ -16,7 +16,9 @@ using MyCommerce.SF.Core.Interfaces;
 using MyCommerce.SF.Core.Tracing;
 using Customer.Extensions;
 using MyCommerce.SF.Core.Constants;
+using MyCommerce.SF.Core.Extensions;
 using ShoppingCart.Interfaces;
+using MyCommerce.SF.Dto;
 
 namespace Customer
 {
@@ -30,7 +32,7 @@ namespace Customer
     /// </remarks>
     [StatePersistence(StatePersistence.Persisted)]
     [ActorService(Name = ServiceNames.CustomerServiceName)]
-    internal class CustomerActor : MyCommerce.SF.Core.Actors.ActorBase, ICustomerActor
+    internal class CustomerActor : MyCommerce.SF.Core.Actors.ActorBase, ICustomerActor, ISubscriberActor
     {
         const string CustomerInfoStateKey = "CustomerInfo";
         const string ShoppingCartInfoStateKey = "ShoppingCartInfo";
@@ -53,7 +55,7 @@ namespace Customer
             isRepositoryInjected = true;
         }
 
-        private async Task ReadConfiguration()
+        private Task ReadConfiguration()
         {
             if (!isRepositoryInjected)
             {
@@ -61,6 +63,7 @@ namespace Customer
                 repository?.Dispose();
                 repository = new CustomersService(configValue, true);
             }
+            return Task.Delay(0);
         }
 
         /// <summary>
@@ -133,7 +136,7 @@ namespace Customer
 
             try
             {
-                if (isNewShoppingCart) await shoppingCartProxy.SetCustomerAsync(this.Id.ToString());
+                if (isNewShoppingCart) await shoppingCartProxy.SubscribeAsync(this);
                 return await shoppingCartProxy.AddProductAsync(productId, productDescription, unitCost, quantity);
             }
             catch (Exception ex)
@@ -176,6 +179,11 @@ namespace Customer
             }
 
             return true;
+        }
+
+        public Task NotifyAsync(IPublisherActor subscriber)
+        {
+            return Task.Delay(0);
         }
     }
 
